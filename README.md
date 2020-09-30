@@ -6,7 +6,6 @@
 ## (4)practise more on bootstrap
 ## (5)Directory and file storage handling (rename ,delete , make)
 
-# What I will do ?
 ## I will review :
 ### (1)Authentication
 ### (2)Access control 
