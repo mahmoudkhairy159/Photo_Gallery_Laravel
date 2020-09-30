@@ -13,10 +13,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'AlbumsController@index');
 Route:: resource('albums','AlbumsController');
 Route:: resource('photos','photosController');
 Route:: get('photos/createForm/{id}','photosController@create')->name('addPhoto');
 
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
