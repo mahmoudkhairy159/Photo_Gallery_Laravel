@@ -131,13 +131,35 @@ class AlbumsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Album $album)
+    public function destroy($id)
     {
-        //delete photo from storage
-        Storage::disk('public')->delete($album->cover_img);
-        $dir = $album->name . 'Album';
-        Storage::disk('public')->deleteDirectory($dir);
-        $album->delete();
-        return redirect(route('albums.index'));
+        $album=Album::withTrashed()->where('id',$id)->first();
+        if($album->trashed()){
+            //force delete
+            Storage::disk('public')->delete($album->cover_img);
+            $dir = $album->name . 'Album';
+            Storage::disk('public')->deleteDirectory($dir);
+            $album->forceDelete();
+            return redirect(route('trashedAlbums.index'));
+
+        }else{
+            //trash soft delete
+            $album->delete();
+            return redirect(route('albums.index' ));
+        }
+
+
+    }
+
+
+    public function trashed (){
+        $trashed=Album::onlyTrashed()->get();
+        return view('albums.index')->with('albums',$trashed);
+    }
+    public function restore ($id){
+        $album=Album::onlyTrashed()->where('id',$id)->first();
+        $album->restore();
+        return redirect(route('trashedAlbums.index'));
+
     }
 }

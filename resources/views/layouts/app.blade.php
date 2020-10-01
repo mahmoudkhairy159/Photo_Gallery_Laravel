@@ -82,7 +82,7 @@
 
             @endforeach
             @endif
-            <div class="row">
+            <div class="row ">
 
                 @yield('content')
             </div>

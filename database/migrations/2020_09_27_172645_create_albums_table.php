@@ -18,6 +18,7 @@ class CreateAlbumsTable extends Migration
             $table->string('name');
             $table->string('cover_img');
             $table->unsignedBigInteger('user_id');
+            $table->softDeletes();
             $table->timestamps();
 
         });

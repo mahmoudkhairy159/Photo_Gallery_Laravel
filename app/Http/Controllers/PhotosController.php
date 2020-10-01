@@ -121,14 +121,40 @@ class PhotosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Photo $photo)
+    public function destroy( $id)
     {
-        //delete photo from storage
-        Storage::disk('public')->delete($photo->photo);
+        $photo=Photo::withTrashed()->where('id', $id)->first();
+        if ($photo->trashed()) {
+            //delete photo from storage
+            Storage::disk('public')->delete($photo->photo);
+            $album_id=$photo->album_id;
+            $photo->forceDelete();
+            return redirect(route('trashedPhotos.index', $album_id));
+        } else {
+            $album_id=$photo->album_id;
+            $photo->delete();
+            return redirect(route('albums.show', $album_id));
+        }
+    }
 
-        $album_id=$photo->album_id;
-        $photo->delete();
-        return redirect(route('albums.show',$album_id));
+        public function trashed ($album_id)
+        {
+            $album=Album::find($album_id);
+            $album->photos= Photo::onlyTrashed()->where('album_id',$album_id)->get();
+            return view('albums.show')->with('album', $album);
+
+        }
+
+
+        public function restore ($id){
+            $photo=Photo::onlyTrashed()->where('id',$id)->first();
+            $photo->restore();
+            return redirect(route('trashedPhotos.index',$photo->album_id));
+
+        }
+
+
+
 
     }
-}
+
